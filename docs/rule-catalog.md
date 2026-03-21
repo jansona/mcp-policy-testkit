@@ -11,7 +11,7 @@
 
 - `TQL001`: duplicate tool name
 - `TQL002`: ambiguous tool contract
-- `TQL003`: hidden instruction or tool poisoning metadata
+- `TQL003`: hidden instruction or tool/prompt poisoning metadata
 - `TQL004`: weak parameter schema
 - `TQL005`: destructive tool missing warning
 - `TQL006`: tool shadowing or duplicated signature
@@ -29,4 +29,3 @@
 - `high`: strong exploitability or major trust boundary failure
 - `medium`: likely misuse, ambiguity, or defense gap
 - `low`: quality issue that should still be fixed for safer operation
-

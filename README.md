@@ -1,11 +1,12 @@
 # mcp-policy-testkit
 
-`mcp-policy-testkit` is a CI-first policy and security testing toolkit for MCP servers. It checks manifests, configuration files, tool metadata, and local source artifacts for common security and quality failures before release.
+`mcp-policy-testkit` is a CI-first policy and security testing toolkit for MCP servers. It checks manifests, configuration files, live MCP metadata obtained through handshake, and local source artifacts for common security and quality failures before release.
 
 ## Features
 
 - Configuration hygiene checks for secrets, environment exposure, unsafe path mappings, and dangerous commands
-- Tool contract analysis for naming clarity, schema quality, destructive disclosures, prompt injection, and tool poisoning
+- Real MCP handshake support for stdio-configured servers and HTTP JSON-RPC endpoints
+- Tool and prompt metadata analysis for naming clarity, schema quality, destructive disclosures, prompt injection, and tool poisoning
 - Source scanning for command injection, dynamic execution, unsafe file access, and resource exhaustion patterns
 - Reports in terminal, JSON, Markdown, and SARIF
 - Rule registry with enable/disable controls and project-level config
@@ -37,6 +38,25 @@ mcp-policy-testkit lint-config path/to/mcp.json --format terminal --fail-on high
 mcp-policy-testkit test path/to/server-or-config --format json --output reports/scan.json
 ```
 
+If the input config includes a runnable MCP server connection, the scanner will attempt a live MCP handshake:
+
+```json
+{
+  "mcpServers": {
+    "local-server": {
+      "command": "python",
+      "args": ["server.py"]
+    }
+  }
+}
+```
+
+You can also target an HTTP MCP endpoint directly:
+
+```bash
+mcp-policy-testkit test https://example.com/mcp --format terminal
+```
+
 ### Convert a saved result bundle
 
 ```bash
@@ -47,7 +67,7 @@ mcp-policy-testkit report --input reports/scan.json --format sarif --output repo
 
 - `config`: hygiene and manifest safety
 - `tool_quality`: tool naming, schema quality, and destructive disclosure
-- `safety`: prompt injection, tool poisoning, shadowing, and source-level dangerous patterns
+- `safety`: prompt injection, tool poisoning, shadowing, prompt metadata, and source-level dangerous patterns
 
 See [docs/rule-catalog.md](/Users/yinbangguo/Projects/mcp_policy_testkit/docs/rule-catalog.md) for the current rule list.
 
@@ -89,4 +109,3 @@ The built-in registry lives in [registry.py](/Users/yinbangguo/Projects/mcp_poli
 ## Status
 
 The package is implementation-ready locally. Pushing to GitHub still requires a remote repository URL and authentication.
-

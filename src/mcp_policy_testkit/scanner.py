@@ -6,7 +6,7 @@ import yaml
 
 from .models import ScanReport
 from .parser import parse_target
-from .remote import fetch_remote_target
+from .remote import MCPHandshakeError, fetch_remote_target, fetch_runtime_target
 from .rules import RuleRegistry
 from .utils import is_url
 
@@ -23,6 +23,27 @@ def scan(
         enabled_rules = enabled_rules or config_data.get("enable_rules")
         disabled_rules = disabled_rules or config_data.get("disable_rules")
     scan_target = fetch_remote_target(target) if is_url(target) else parse_target(target)
+    if scan_target.mode == "local":
+        handshake_errors = []
+        for runtime_target in scan_target.runtime_targets:
+            try:
+                live_target = fetch_runtime_target(runtime_target)
+            except MCPHandshakeError as exc:
+                handshake_errors.append(
+                    {
+                        "transport": runtime_target.transport,
+                        "source": runtime_target.source.path,
+                        "message": str(exc),
+                    }
+                )
+                continue
+            scan_target.tools.extend(live_target.tools)
+            scan_target.prompts.extend(live_target.prompts)
+            if live_target.metadata:
+                servers = scan_target.metadata.setdefault("live_servers", [])
+                servers.append(live_target.metadata)
+        if handshake_errors:
+            scan_target.metadata["handshake_errors"] = handshake_errors
     registry = RuleRegistry()
     findings = registry.evaluate(scan_target, enabled=enabled_rules, disabled=disabled_rules)
     if lint_config_only:
@@ -33,5 +54,10 @@ def scan(
         target=scan_target.target,
         findings=findings,
         score_summary={"tool_quality_score": score},
-        metadata={"mode": scan_target.mode, "tool_count": len(scan_target.tools)},
+        metadata={
+            "mode": scan_target.mode,
+            "tool_count": len(scan_target.tools),
+            "prompt_count": len(scan_target.prompts),
+            **scan_target.metadata,
+        },
     )

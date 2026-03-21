@@ -28,6 +28,12 @@
         }
       }
     }
+  ],
+  "prompts": [
+    {
+      "name": "review_prompt",
+      "description": "Review approved account records only.",
+      "arguments": []
+    }
   ]
 }
-

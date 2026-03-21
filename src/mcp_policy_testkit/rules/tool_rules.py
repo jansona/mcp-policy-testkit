@@ -111,6 +111,28 @@ class PromptInjectionMetadataRule(Rule):
                         score_impact=10,
                     )
                 )
+        for prompt in target.prompts:
+            haystack = f"{prompt.name}\n{prompt.description}"
+            if INJECTION_TEXT_PATTERN.search(haystack):
+                findings.append(
+                    Finding(
+                        rule_id=self.rule_id,
+                        title=self.title,
+                        severity=self.severity,
+                        category=self.category,
+                        message=(
+                            f"Prompt '{prompt.name}' contains prompt-injection "
+                            "or hidden instruction language."
+                        ),
+                        recommendation=(
+                            "Remove instructions unrelated to the prompt's purpose "
+                            "and keep metadata task-focused."
+                        ),
+                        evidence=prompt.description,
+                        location=prompt.source,
+                        score_impact=10,
+                    )
+                )
         return findings
 
 

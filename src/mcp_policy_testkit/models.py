@@ -61,9 +61,28 @@ class ToolDefinition(BaseModel):
     source: SourceLocation
 
 
+class PromptDefinition(BaseModel):
+    name: str
+    description: str = ""
+    arguments: List[Dict[str, Any]] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    source: SourceLocation
+
+
 class ConfigCommand(BaseModel):
     command: str
     source: SourceLocation
+
+
+class RuntimeTarget(BaseModel):
+    transport: str
+    source: SourceLocation
+    name: str = ""
+    command: Optional[str] = None
+    args: List[str] = Field(default_factory=list)
+    cwd: Optional[str] = None
+    env: Dict[str, str] = Field(default_factory=dict)
+    url: Optional[str] = None
 
 
 class SourceArtifact(BaseModel):
@@ -78,8 +97,10 @@ class ScanTarget(BaseModel):
     raw_documents: List[Tuple[str, Dict[str, Any]]] = Field(default_factory=list)
     configs: List[Dict[str, Any]] = Field(default_factory=list)
     tools: List[ToolDefinition] = Field(default_factory=list)
+    prompts: List[PromptDefinition] = Field(default_factory=list)
     commands: List[ConfigCommand] = Field(default_factory=list)
     source_artifacts: List[SourceArtifact] = Field(default_factory=list)
+    runtime_targets: List[RuntimeTarget] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 

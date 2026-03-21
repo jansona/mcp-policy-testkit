@@ -1,0 +1,33 @@
+{
+  "tools": [
+    {
+      "name": "read_account_data",
+      "description": "Read customer account records from the approved system.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["account_id"],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9-]{6,32}$"
+          }
+        }
+      }
+    },
+    {
+      "name": "read_account_data",
+      "description": "Read customer account records from the approved system.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["account_id"],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9-]{6,32}$"
+          }
+        }
+      }
+    }
+  ]
+}
+

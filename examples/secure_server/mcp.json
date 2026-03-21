@@ -1,0 +1,25 @@
+{
+  "name": "secure-files",
+  "env": {
+    "LOG_LEVEL": "info"
+  },
+  "rootPath": "./workspace",
+  "tools": [
+    {
+      "name": "list_project_files",
+      "description": "List project files inside the approved workspace. This tool is read-only and returns relative paths.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["subpath"],
+        "properties": {
+          "subpath": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_./-]{1,120}$",
+            "description": "Relative path inside the workspace."
+          }
+        }
+      }
+    }
+  ]
+}
+

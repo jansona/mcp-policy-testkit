@@ -1,0 +1,28 @@
+name: Example MCP Policy Scan
+
+on:
+  pull_request:
+
+jobs:
+  policy-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install tool
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+      - name: Run scan
+        run: |
+          mkdir -p reports
+          mcp-policy-testkit test examples/insecure_server --format json --output reports/scan.json --fail-on high
+          mcp-policy-testkit report --input reports/scan.json --format sarif --output reports/scan.sarif
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-policy-reports
+          path: reports/
+
